@@ -20,10 +20,18 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: Install dependencies (with fallback)
+        shell: bash
         run: |
-          pip install -r requirements.txt
-          pip install pytest
+          set -e
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          elif [ -f src/requirements.txt ]; then
+            pip install -r src/requirements.txt
+          else
+            echo "No requirements file found, installing minimal deps..."
+            pip install requests beautifulsoup4 pytest
+          fi
 
       - name: Run tests (tolerate no tests)
         shell: bash
@@ -49,8 +57,18 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Install dependencies (with fallback)
+        shell: bash
+        run: |
+          set -e
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          elif [ -f src/requirements.txt ]; then
+            pip install -r src/requirements.txt
+          else
+            echo "No requirements file found, installing minimal deps..."
+            pip install requests beautifulsoup4
+          fi
 
       - name: Run scanner against demo target
         run: |
