@@ -1,0 +1,159 @@
+2025-10-29 17:56:23 - INFO - Iniciando varredura em http://testphp.vulnweb.com
+2025-10-29 17:56:24 - INFO - Crawling: http://testphp.vulnweb.com (Depth: 0)
+2025-10-29 17:56:34 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ', Parâmetro: searchFor
+2025-10-29 17:56:35 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR '1'='1, Parâmetro: searchFor
+2025-10-29 17:56:35 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR 1=1--, Parâmetro: searchFor
+2025-10-29 17:56:36 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' UNION SELECT NULL--, Parâmetro: searchFor
+2025-10-29 17:56:36 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: admin' --, Parâmetro: searchFor
+2025-10-29 17:56:37 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ', Parâmetro: goButton
+2025-10-29 17:56:38 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR '1'='1, Parâmetro: goButton
+2025-10-29 17:56:39 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR 1=1--, Parâmetro: goButton
+2025-10-29 17:56:40 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' UNION SELECT NULL--, Parâmetro: goButton
+2025-10-29 17:56:41 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: admin' --, Parâmetro: goButton
+2025-10-29 18:22:59 - INFO - Iniciando varredura em http://testphp.vulnweb.com
+2025-10-29 18:23:00 - INFO - Crawling: http://testphp.vulnweb.com (Depth: 0)
+2025-10-29 18:23:01 - WARNING - [CSRF] Possible missing token at http://testphp.vulnweb.com
+2025-10-29 18:23:10 - WARNING - [InfoDisc] Sensitive data pattern at http://testphp.vulnweb.com
+2025-10-29 18:23:20 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ', Parâmetro: searchFor
+2025-10-29 18:23:21 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR '1'='1, Parâmetro: searchFor
+2025-10-29 18:23:21 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR 1=1--, Parâmetro: searchFor
+2025-10-29 18:23:22 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' UNION SELECT NULL--, Parâmetro: searchFor
+2025-10-29 18:23:23 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: admin' --, Parâmetro: searchFor
+2025-10-29 18:23:24 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ', Parâmetro: goButton
+2025-10-29 18:23:25 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR '1'='1, Parâmetro: goButton
+2025-10-29 18:23:25 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR 1=1--, Parâmetro: goButton
+2025-10-29 18:23:26 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' UNION SELECT NULL--, Parâmetro: goButton
+2025-10-29 18:23:27 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: admin' --, Parâmetro: goButton
+2025-10-29 18:23:27 - INFO - Crawling: http://testphp.vulnweb.com/index.php (Depth: 1)
+2025-10-29 18:23:28 - WARNING - [CSRF] Possible missing token at http://testphp.vulnweb.com/index.php
+2025-10-29 18:23:36 - WARNING - [InfoDisc] Sensitive data pattern at http://testphp.vulnweb.com/index.php
+2025-10-29 18:23:45 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ', Parâmetro: searchFor
+2025-10-29 18:23:46 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR '1'='1, Parâmetro: searchFor
+2025-10-29 18:23:46 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR 1=1--, Parâmetro: searchFor
+2025-10-29 18:23:47 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' UNION SELECT NULL--, Parâmetro: searchFor
+2025-10-29 18:23:48 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: admin' --, Parâmetro: searchFor
+2025-10-29 18:23:49 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ', Parâmetro: goButton
+2025-10-29 18:23:50 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR '1'='1, Parâmetro: goButton
+2025-10-29 18:23:50 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR 1=1--, Parâmetro: goButton
+2025-10-29 18:23:51 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' UNION SELECT NULL--, Parâmetro: goButton
+2025-10-29 18:23:52 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: admin' --, Parâmetro: goButton
+2025-10-29 20:10:20 - INFO - Iniciando varredura em http://dvwa.co.uk
+2025-10-29 20:10:30 - INFO - Iniciando varredura em https://juice-shop.herokuapp.com
+2025-10-29 20:10:32 - INFO - Crawling: https://juice-shop.herokuapp.com (Depth: 0)
+2025-10-29 20:10:36 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/.git/HEAD
+2025-10-29 20:10:38 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/.env
+2025-10-29 20:10:39 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/.htaccess
+2025-10-29 20:10:41 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/.htpasswd
+2025-10-29 20:10:42 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/server-status
+2025-10-29 20:10:44 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/wp-config.php.bak
+2025-10-29 20:10:46 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/config.php.bak
+2025-10-29 20:10:47 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/database.yml
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/.DS_Store
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:10:49 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:21:46 - INFO - Iniciando varredura em https://juice-shop.herokuapp.com
+2025-10-29 20:21:47 - INFO - Crawling: https://juice-shop.herokuapp.com (Depth: 0)
+2025-10-29 20:21:50 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/.git/HEAD
+2025-10-29 20:21:52 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/.env
+2025-10-29 20:21:53 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/.htaccess
+2025-10-29 20:21:55 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/.htpasswd
+2025-10-29 20:21:57 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/server-status
+2025-10-29 20:21:59 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/wp-config.php.bak
+2025-10-29 20:22:01 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/config.php.bak
+2025-10-29 20:22:03 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/database.yml
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive file accessible: https://juice-shop.herokuapp.com/.DS_Store
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-29 20:22:04 - WARNING - [InfoDisc] Sensitive data pattern at https://juice-shop.herokuapp.com
+2025-10-30 10:47:54 - INFO - Iniciando varredura em https://juice-shop.herokuapp.com
+2025-10-30 10:48:30 - INFO - Iniciando varredura em https://testphp.vulnweb.com
+2025-10-30 10:57:12 - INFO - Iniciando varredura em http://testphp.vulnweb.com
+2025-10-30 10:57:13 - INFO - Crawling: http://testphp.vulnweb.com (Depth: 0)
+2025-10-30 10:57:13 - WARNING - [CSRF] Possible missing token at http://testphp.vulnweb.com
+2025-10-30 10:57:17 - WARNING - [InfoDisc] Sensitive data pattern at http://testphp.vulnweb.com
+2025-10-30 10:57:17 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ', Parâmetro: searchFor
+2025-10-30 10:57:18 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR '1'='1, Parâmetro: searchFor
+2025-10-30 10:57:18 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR 1=1--, Parâmetro: searchFor
+2025-10-30 10:57:18 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' UNION SELECT NULL--, Parâmetro: searchFor
+2025-10-30 10:57:19 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: admin' --, Parâmetro: searchFor
+2025-10-30 10:57:19 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ', Parâmetro: goButton
+2025-10-30 10:57:20 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR '1'='1, Parâmetro: goButton
+2025-10-30 10:57:20 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR 1=1--, Parâmetro: goButton
+2025-10-30 10:57:20 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' UNION SELECT NULL--, Parâmetro: goButton
+2025-10-30 10:57:21 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: admin' --, Parâmetro: goButton
+2025-10-30 10:57:21 - INFO - Crawling: http://testphp.vulnweb.com/index.php (Depth: 1)
+2025-10-30 10:57:21 - WARNING - [CSRF] Possible missing token at http://testphp.vulnweb.com/index.php
+2025-10-30 10:57:25 - WARNING - [InfoDisc] Sensitive data pattern at http://testphp.vulnweb.com/index.php
+2025-10-30 10:57:26 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ', Parâmetro: searchFor
+2025-10-30 10:57:26 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR '1'='1, Parâmetro: searchFor
+2025-10-30 10:57:26 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR 1=1--, Parâmetro: searchFor
+2025-10-30 10:57:27 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' UNION SELECT NULL--, Parâmetro: searchFor
+2025-10-30 10:57:27 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: admin' --, Parâmetro: searchFor
+2025-10-30 10:57:28 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ', Parâmetro: goButton
+2025-10-30 10:57:28 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR '1'='1, Parâmetro: goButton
+2025-10-30 10:57:29 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' OR 1=1--, Parâmetro: goButton
+2025-10-30 10:57:29 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: ' UNION SELECT NULL--, Parâmetro: goButton
+2025-10-30 10:57:29 - WARNING - Vulnerabilidade encontrada - Tipo: SQL Injection, URL: http://testphp.vulnweb.com/search.php?test=query, Payload: admin' --, Parâmetro: goButton

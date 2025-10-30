@@ -1,0 +1,233 @@
+{
+  "scan_summary": {
+    "target_url": "http://testphp.vulnweb.com",
+    "scan_date": "2025-10-30 10:57:29",
+    "duration_seconds": 17.17,
+    "urls_scanned": 3,
+    "vulnerabilities_found": 24
+  },
+  "vulnerabilities": [
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com",
+      "parameter": "form",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "evidence": "Form without CSRF token"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com",
+      "parameter": "content",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Found pattern: wvs@acun..."
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "searchFor",
+      "payload": "'",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "searchFor",
+      "payload": "' OR '1'='1",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "searchFor",
+      "payload": "' OR 1=1--",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "searchFor",
+      "payload": "' UNION SELECT NULL--",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "searchFor",
+      "payload": "admin' --",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "goButton",
+      "payload": "'",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "goButton",
+      "payload": "' OR '1'='1",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "goButton",
+      "payload": "' OR 1=1--",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "goButton",
+      "payload": "' UNION SELECT NULL--",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "goButton",
+      "payload": "admin' --",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com/index.php",
+      "parameter": "form",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "evidence": "Form without CSRF token"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com/index.php",
+      "parameter": "content",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Found pattern: wvs@acun..."
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "searchFor",
+      "payload": "'",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "searchFor",
+      "payload": "' OR '1'='1",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "searchFor",
+      "payload": "' OR 1=1--",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "searchFor",
+      "payload": "' UNION SELECT NULL--",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "searchFor",
+      "payload": "admin' --",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "goButton",
+      "payload": "'",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "goButton",
+      "payload": "' OR '1'='1",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "goButton",
+      "payload": "' OR 1=1--",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "goButton",
+      "payload": "' UNION SELECT NULL--",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    },
+    {
+      "type": "SQL Injection",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "parameter": "goButton",
+      "payload": "admin' --",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Padrão de erro SQL encontrado: 'sql'"
+    }
+  ],
+  "scanned_urls": [
+    "http://testphp.vulnweb.com",
+    "http://testphp.vulnweb.com/index.php",
+    "http://testphp.vulnweb.com/search.php?test=query"
+  ],
+  "vulnerability_summary": {
+    "CSRF": 2,
+    "Sensitive Data Exposure": 2,
+    "SQL Injection": 20
+  }
+}

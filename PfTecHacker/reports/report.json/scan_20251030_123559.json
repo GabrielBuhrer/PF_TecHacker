@@ -1,0 +1,304 @@
+{
+  "target": "http://testphp.vulnweb.com",
+  "datetime": "2025-10-30 12:35:59",
+  "duration_seconds": 305.5,
+  "urls_scanned": 10,
+  "vulnerability_summary": {
+    "CSRF": 10,
+    "Sensitive Data Exposure": 9,
+    "severity_Medium": 10,
+    "severity_Low": 9,
+    "total": 19
+  },
+  "vulnerabilities": [
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com",
+      "severity": "Low",
+      "parameter": "",
+      "payload": "",
+      "evidence": "X-Powered-By header",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com/hpp/",
+      "severity": "Low",
+      "parameter": "",
+      "payload": "",
+      "evidence": "X-Powered-By header",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com/login.php",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com/login.php",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com/login.php",
+      "severity": "Low",
+      "parameter": "",
+      "payload": "",
+      "evidence": "X-Powered-By header",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com/guestbook.php",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com/guestbook.php",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com/guestbook.php",
+      "severity": "Low",
+      "parameter": "",
+      "payload": "",
+      "evidence": "X-Powered-By header",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com/AJAX/index.php",
+      "severity": "Low",
+      "parameter": "",
+      "payload": "",
+      "evidence": "X-Powered-By header",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com/disclaimer.php",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com/disclaimer.php",
+      "severity": "Low",
+      "parameter": "",
+      "payload": "",
+      "evidence": "X-Powered-By header",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com/index.php",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com/index.php",
+      "severity": "Low",
+      "parameter": "",
+      "payload": "",
+      "evidence": "X-Powered-By header",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com/userinfo.php",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com/userinfo.php",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com/userinfo.php",
+      "severity": "Low",
+      "parameter": "",
+      "payload": "",
+      "evidence": "X-Powered-By header",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "http://testphp.vulnweb.com/cart.php",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "Sensitive Data Exposure",
+      "url": "http://testphp.vulnweb.com/cart.php",
+      "severity": "Low",
+      "parameter": "",
+      "payload": "",
+      "evidence": "X-Powered-By header",
+      "tool": "internal",
+      "confidence": "Medium"
+    }
+  ],
+  "integrations": [],
+  "extra_tools": [
+    {
+      "tool": "nmap",
+      "type": "Timeout",
+      "severity": "Info",
+      "message": "nmap timed out (300s)"
+    },
+    {
+      "tool": "whatweb",
+      "type": "ActiveX",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Adobe-Flash",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Country",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Email",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "HTTPServer",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "IP",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "nginx",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Object",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "PHP",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Script",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Title",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "whatweb",
+      "type": "X-Powered-By",
+      "severity": "Info",
+      "message": "",
+      "target": "http://testphp.vulnweb.com"
+    },
+    {
+      "tool": "wfuzz",
+      "type": "ToolMissing",
+      "severity": "Info",
+      "message": "wfuzz not found in PATH"
+    }
+  ]
+}
