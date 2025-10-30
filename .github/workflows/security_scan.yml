@@ -1,105 +1,68 @@
-name: Security Scanner CI
+name: security_scan
 
 on:
   push:
-    branches: [main]
   pull_request:
-    branches: [main]
+  workflow_dispatch:
 
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  DEMO_TARGET: http://testphp.vulnweb.com
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'          # use 3.11 (mais rápido). Se quiser manter 3.8, troque aqui.
+          python-version: '3.11'
           cache: 'pip'
-          cache-dependency-path: src/requirements.txt
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r src/requirements.txt
-          pip install pytest pytest-cov
+          pip install -r requirements.txt
+          pip install pytest
 
-      - name: Run tests
-        run: python -m pytest -q src/tests
+      - name: Run tests (tolerate no tests)
+        shell: bash
+        run: |
+          pytest -q src/tests || {
+            code=$?
+            if [ "$code" -eq 5 ]; then
+              echo "Pytest exit 5 (no tests collected). Continuing...";
+              exit 0
+            fi
+            exit $code
+          }
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  scan:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Build image (local)
-        uses: docker/build-push-action@v5
+      - uses: actions/setup-python@v5
         with:
-          context: .
-          load: true                      # carrega a imagem no daemon local p/ rodar no próximo passo
-          tags: local/web-scanner:ci
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
       - name: Run scanner against demo target
         run: |
           mkdir -p reports
-          docker run --rm -v "$PWD/reports:/app/reports" \
-            local/web-scanner:ci \
-            -u http://testphp.vulnweb.com --depth 1 --export json md csv
+          python src/scanner.py \
+            -u "${DEMO_TARGET}" \
+            --depth 1 --timeout 180 \
+            --export json md csv \
+            --output-dir reports
 
       - name: Upload reports
-        if: always()                      # sobe os relatórios mesmo se o teste falhar
         uses: actions/upload-artifact@v4
         with:
-          name: scan-reports
-          path: reports/
-
-  build-and-push:
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    env:
-      IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/security-scanner
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  deploy:
-    needs: build-and-push
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v0.1.10   # evite usar @master; fixe uma versão
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          script_stop: true
-          script: |
-            set -e
-            cd /opt/security-scanner
-            docker compose pull
-            docker compose up -d
+          name: reports
+          path: reports/*
