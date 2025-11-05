@@ -1,0 +1,2 @@
+type,url,parameter,severity,evidence
+CSRF,https://demo.testfire.net/subscribe.jsp,,Medium,Form POST sem token

@@ -1,5 +1,4 @@
-requests>=2.31.0
-beautifulsoup4>=4.12.2
-colorama>=0.4.6
-lxml>=5.2.0
-python-owasp-zap-v2.4
+requests>=2.32
+beautifulsoup4>=4.12
+rich>=13.7
+tqdm>=4.66

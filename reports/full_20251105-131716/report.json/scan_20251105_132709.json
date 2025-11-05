@@ -1,0 +1,117 @@
+{
+  "target": "https://demo.testfire.net",
+  "datetime": "2025-11-05 13:27:09",
+  "duration_seconds": 592.58,
+  "urls_scanned": 10,
+  "vulnerability_summary": {
+    "CSRF": 1,
+    "severity_Medium": 1,
+    "total": 1
+  },
+  "vulnerabilities": [
+    {
+      "type": "CSRF",
+      "url": "https://demo.testfire.net/subscribe.jsp",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    }
+  ],
+  "integrations": [
+    "ZAP baseline executado (rc=0) [m=5min, timeout=600s]. Relatórios: zap_report.html, zap_report.json",
+    "Nikto executado (rc=0) [maxtime=300s, timeout=1592s] – saída gravada em nikto_output.txt"
+  ],
+  "extra_tools": [
+    {
+      "tool": "nmap",
+      "type": "http-headers",
+      "severity": "Info",
+      "confidence": "Low",
+      "message": "\n  Server: Apache-Coyote/1.1\n  Set-Cookie: JSESSIONID=AF70B835A13CB5E8964D6476AC1AA92C; Path=/; HttpOnly\n  Content-Type: text/html;charset=ISO-8859-1\n  Transfer-Encoding: chunked\n  Date: Wed, 05 Nov 2025 16:26:58 GMT\n  Connection: close\n  \n  (Request type: HEAD)\n",
+      "target": "demo.testfire.net",
+      "port": "80",
+      "proto": "tcp"
+    },
+    {
+      "tool": "nmap",
+      "type": "http-title",
+      "severity": "Info",
+      "confidence": "Low",
+      "message": "Altoro Mutual",
+      "target": "demo.testfire.net",
+      "port": "80",
+      "proto": "tcp"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Apache",
+      "severity": "Info",
+      "message": "detected",
+      "target": "https://demo.testfire.net"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Cookies",
+      "severity": "Info",
+      "message": "detected",
+      "target": "https://demo.testfire.net"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Country",
+      "severity": "Info",
+      "message": "detected",
+      "target": "https://demo.testfire.net"
+    },
+    {
+      "tool": "whatweb",
+      "type": "HTTPServer",
+      "severity": "Info",
+      "message": "detected",
+      "target": "https://demo.testfire.net"
+    },
+    {
+      "tool": "whatweb",
+      "type": "HttpOnly",
+      "severity": "Info",
+      "message": "detected",
+      "target": "https://demo.testfire.net"
+    },
+    {
+      "tool": "whatweb",
+      "type": "IP",
+      "severity": "Info",
+      "message": "detected",
+      "target": "https://demo.testfire.net"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Java",
+      "severity": "Info",
+      "message": "detected",
+      "target": "https://demo.testfire.net"
+    },
+    {
+      "tool": "whatweb",
+      "type": "Title",
+      "severity": "Info",
+      "message": "detected",
+      "target": "https://demo.testfire.net"
+    },
+    {
+      "tool": "nuclei",
+      "type": "NoFindings",
+      "severity": "Info",
+      "message": "No nuclei results"
+    },
+    {
+      "tool": "wfuzz",
+      "type": "NoFindings",
+      "severity": "Info",
+      "message": "No wfuzz results"
+    }
+  ]
+}

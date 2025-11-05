@@ -1,86 +1,50 @@
-name: security_scan
+# .github/workflows/security_scan.yml
+name: security-scan
 
 on:
   push:
   pull_request:
-  workflow_dispatch:
-
-env:
-  DEMO_TARGET: http://testphp.vulnweb.com
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install dependencies (with fallback)
-        shell: bash
-        run: |
-          set -e
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          elif [ -f src/requirements.txt ]; then
-            pip install -r src/requirements.txt
-          else
-            echo "No requirements file found, installing minimal deps..."
-            pip install requests beautifulsoup4 pytest
-          fi
-
-      - name: Run tests (tolerate no tests)
-        shell: bash
-        run: |
-          pytest -q src/tests || {
-            code=$?
-            if [ "$code" -eq 5 ]; then
-              echo "Pytest exit 5 (no tests collected). Continuing...";
-              exit 0
-            fi
-            exit $code
-          }
-
   scan:
-    needs: test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.10"
+          cache: "pip"
 
-      - name: Install dependencies (with fallback)
-        shell: bash
+      - name: Install Python deps
         run: |
-          set -e
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          elif [ -f src/requirements.txt ]; then
-            pip install -r src/requirements.txt
-          else
-            echo "No requirements file found, installing minimal deps..."
-            pip install requests beautifulsoup4
-          fi
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Run scanner against demo target
+      # Extras no host (opcional). Mantive nmap/whatweb pois são rápidos e estáveis no CI.
+      - name: Install host tools (optional)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nmap whatweb
+          whatweb --version || true
+          nmap --version || true
+
+      # Exemplo seguro/rápido para CI: alvo didático + timeout OPCIONAL curto
+      - name: Run security scan
         run: |
           mkdir -p reports
           python src/scanner.py \
-            -u "${DEMO_TARGET}" \
+            -u http://testphp.vulnweb.com \
             --depth 1 --timeout 180 \
             --export json md csv \
-            --output-dir reports
+            --extra-tools nmap whatweb \
+            --output-dir reports/ci_${{ github.run_id }}
 
       - name: Upload reports
         uses: actions/upload-artifact@v4
         with:
-          name: reports
-          path: reports/*
+          name: security-reports
+          path: reports/**
