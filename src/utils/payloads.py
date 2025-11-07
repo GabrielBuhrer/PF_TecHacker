@@ -1,6 +1,3 @@
-"""
-Arquivo contendo payloads e padrões para detecção de vulnerabilidades
-"""
 
 XSS_PAYLOADS = [
     '<script>alert("xss")</script>',
@@ -31,7 +28,6 @@ SQLI_PAYLOADS = [
     "1' ORDER BY 1--",
 ]
 
-# Padrões para detecção de erros SQL
 SQL_ERROR_PATTERNS = [
     'sql',
     'mysql',
@@ -56,7 +52,6 @@ SQL_ERROR_PATTERNS = [
     'pg_query',
 ]
 
-# Padrões para confirmar XSS
 XSS_PATTERNS = [
     '<script>',
     'onerror=',

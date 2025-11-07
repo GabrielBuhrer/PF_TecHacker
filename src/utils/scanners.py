@@ -1,17 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Scanners de vulnerabilidades para a ferramenta de varredura web.
-
-Cada classe abaixo é responsável por detectar um tipo de vulnerabilidade:
-- CSRF (falta de token em formulários POST)
-- Directory Traversal
-- File Inclusion (LFI/RFI)
-- Information Disclosure (erros, arquivos sensíveis, dados sensíveis)
-- Command Injection
-
-Todos os métodos retornam `list[dict]` com chaves:
-    type, url, parameter, severity, confidence, evidence, (payload opcional)
-"""
 
 from __future__ import annotations
 
@@ -23,7 +10,6 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
-# ----------------------------- Configuração geral -----------------------------
 
 DEFAULT_TIMEOUT = 8
 DEFAULT_HEADERS = {
@@ -34,7 +20,6 @@ DEFAULT_HEADERS = {
 }
 
 def _safe_get(url: str, *, params: Optional[dict] = None) -> Optional[requests.Response]:
-    """Requisição GET resiliente (não levanta exceção)."""
     try:
         return requests.get(url, params=params, headers=DEFAULT_HEADERS, timeout=DEFAULT_TIMEOUT, allow_redirects=True)
     except Exception:
@@ -42,14 +27,12 @@ def _safe_get(url: str, *, params: Optional[dict] = None) -> Optional[requests.R
 
 
 def _clone_params(params: Dict) -> Dict:
-    """Copia rasa preservando listas/strings (evita mutação compartilhada)."""
     out = {}
     for k, v in (params or {}).items():
         out[k] = copy.deepcopy(v)
     return out
 
 
-# -------------------------- Payloads e Padrões Base ---------------------------
 
 CSRF_PATTERNS = ["csrf", "token", "nonce"]
 
@@ -68,11 +51,9 @@ LFI_PAYLOADS = [
     "php://filter/convert.base64-encode/resource=index.php",
 ]
 
-# Para RFI não fazemos chamadas externas. O objetivo é provocar mensagens de erro
-# que denunciem tentativas de incluir URLs remotas.
 RFI_PAYLOADS = [
-    "http://127.0.0.1/",              # pode gerar erro de conexão
-    "http://example.com/shell.txt",   # pode aparecer em mensagens de erro
+    "http://127.0.0.1/",
+    "http://example.com/shell.txt",
     "//example.com/shell.txt",
 ]
 
@@ -89,10 +70,10 @@ INFO_DISCLOSURE_PATTERNS = {
         "config.php.bak", "database.yml", ".DS_Store",
     ],
     "sensitive_data": [
-        r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b",  # e-mail
-        r"\bAKIA[0-9A-Z]{16}\b",                               # AWS Access Key (padrão)
-        r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",                      # telefone simples
-        r"\b\d{3}[-]?\d{2}[-]?\d{4}\b",                        # SSN (formato EUA)
+        r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b",
+        r"\bAKIA[0-9A-Z]{16}\b",
+        r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",
+        r"\b\d{3}[-]?\d{2}[-]?\d{4}\b",
     ],
 }
 
@@ -102,26 +83,22 @@ CMD_INJECTION_PAYLOADS = [
 ]
 
 CMD_INJECTION_PATTERNS = [
-    "uid=", "gid=", "groups=",               # *nix `id`
-    "root:x:", "bin:x:",                     # /etc/passwd
-    "Directory of", "Volume Serial Number",  # Windows `dir`
+    "uid=", "gid=", "groups=",
+    "root:x:", "bin:x:",
+    "Directory of", "Volume Serial Number",
 ]
 
-# ---------------------------------- Scanners ----------------------------------
 
 
 class CSRFScanner:
-    """Detecta formulários POST sem token CSRF."""
 
     def __init__(self, logger):
         self.logger = logger
 
     def check_csrf_forms(self, url: str, html_content: str) -> List[dict]:
-        """Alias compatível (preferido)."""
         return self.check_csrf_protection(url, html_content)
 
     def check_csrf_protection(self, url: str, html_content: str) -> List[dict]:
-        """Procura <form method="post"> sem input hidden com nome contendo csrf|token|nonce."""
         vulns: List[dict] = []
         soup = BeautifulSoup(html_content or "", "html.parser")
         forms = soup.find_all("form", method=re.compile(r"^post$", re.I))
@@ -150,7 +127,6 @@ class CSRFScanner:
 
 
 class DirectoryTraversalScanner:
-    """Testes de Directory Traversal."""
 
     def __init__(self, logger):
         self.logger = logger
@@ -186,7 +162,6 @@ class DirectoryTraversalScanner:
 
 
 class FileInclusionScanner:
-    """Testes de LFI/RFI."""
 
     def __init__(self, logger):
         self.logger = logger
@@ -194,7 +169,6 @@ class FileInclusionScanner:
     def check_file_inclusion(self, url: str, params: Dict) -> List[dict]:
         vulns: List[dict] = []
 
-        # LFI
         for pname, _ in (params or {}).items():
             for payload in LFI_PAYLOADS:
                 test_params = _clone_params(params)
@@ -219,7 +193,6 @@ class FileInclusionScanner:
                     except Exception:
                         pass
 
-        # RFI (heurística: mensagens de erro envolvendo URLs remotas)
         rfi_error_hints = [
             "failed to open stream", "http wrapper", "URL file-access is disabled",
             "allow_url_fopen", "no such host", "timed out while opening",
@@ -252,7 +225,6 @@ class FileInclusionScanner:
 
 
 class InfoDisclosureScanner:
-    """Exposição de informações (erros, arquivos e dados sensíveis)."""
 
     def __init__(self, logger):
         self.logger = logger
@@ -260,7 +232,6 @@ class InfoDisclosureScanner:
     def check_info_disclosure(self, url: str, response_text: str) -> List[dict]:
         vulns: List[dict] = []
 
-        # 1) Mensagens de erro
         for pattern in INFO_DISCLOSURE_PATTERNS["error_messages"]:
             if pattern.lower() in (response_text or "").lower():
                 vuln = {
@@ -277,7 +248,6 @@ class InfoDisclosureScanner:
                 except Exception:
                     pass
 
-        # 2) Arquivos sensíveis na raiz/base do site
         base_url = urljoin(url, "/")
         for path in INFO_DISCLOSURE_PATTERNS["sensitive_files"]:
             test_url = urljoin(base_url, path)
@@ -297,7 +267,6 @@ class InfoDisclosureScanner:
                 except Exception:
                     pass
 
-        # 3) Dados sensíveis no HTML
         for rx in INFO_DISCLOSURE_PATTERNS["sensitive_data"]:
             for m in re.finditer(rx, response_text or ""):
                 sample = m.group(0)
@@ -319,7 +288,6 @@ class InfoDisclosureScanner:
 
 
 class CommandInjectionScanner:
-    """Injeção de comandos via parâmetros (heurística por padrões de saída)."""
 
     def __init__(self, logger):
         self.logger = logger
@@ -350,7 +318,6 @@ class CommandInjectionScanner:
                         self.logger.warning(f"[CmdInj] {url} param={pname} payload={payload}")
                     except Exception:
                         pass
-                    # evita multi-match do mesmo payload
         return vulns
 
 
@@ -360,7 +327,6 @@ __all__ = [
     "FileInclusionScanner",
     "InfoDisclosureScanner",
     "CommandInjectionScanner",
-    # constantes úteis para testes
     "CSRF_PATTERNS",
     "TRAVERSAL_PAYLOADS",
     "LFI_PAYLOADS",

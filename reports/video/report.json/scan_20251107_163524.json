@@ -1,28 +1,15 @@
 {
   "target": "https://demo.testfire.net",
-  "datetime": "2025-11-05 13:27:09",
-  "duration_seconds": 592.58,
-  "urls_scanned": 10,
+  "datetime": "2025-11-07 16:35:24",
+  "duration_seconds": 164.88,
+  "urls_scanned": 1,
   "vulnerability_summary": {
-    "CSRF": 1,
-    "severity_Medium": 1,
-    "total": 1
+    "total": 0
   },
-  "vulnerabilities": [
-    {
-      "type": "CSRF",
-      "url": "https://demo.testfire.net/subscribe.jsp",
-      "severity": "Medium",
-      "parameter": "",
-      "payload": "",
-      "evidence": "Form POST sem token",
-      "tool": "internal",
-      "confidence": "Medium"
-    }
-  ],
+  "vulnerabilities": [],
   "integrations": [
-    "ZAP baseline executado (rc=0) [m=5min, timeout=600s]. Relatórios: zap_report.html, zap_report.json",
-    "Nikto executado (rc=0) [maxtime=300s, timeout=1592s] – saída gravada em nikto_output.txt"
+    "ZAP baseline executado (rc=0) [m=2min, timeout=398s]. Relatórios: zap_report.html, zap_report.json",
+    "Nikto executado (rc=0) [maxtime=120s, timeout=372s] – saída gravada em nikto_output.txt"
   ],
   "extra_tools": [
     {
@@ -30,7 +17,17 @@
       "type": "http-headers",
       "severity": "Info",
       "confidence": "Low",
-      "message": "\n  Server: Apache-Coyote/1.1\n  Set-Cookie: JSESSIONID=AF70B835A13CB5E8964D6476AC1AA92C; Path=/; HttpOnly\n  Content-Type: text/html;charset=ISO-8859-1\n  Transfer-Encoding: chunked\n  Date: Wed, 05 Nov 2025 16:26:58 GMT\n  Connection: close\n  \n  (Request type: HEAD)\n",
+      "message": "\n  Server: Apache-Coyote/1.1\n  Set-Cookie: JSESSIONID=904C8A3F9FDFE442A98505915FA39557; Path=/; HttpOnly\n  Content-Type: text/html;charset=ISO-8859-1\n  Transfer-Encoding: chunked\n  Date: Fri, 07 Nov 2025 19:35:13 GMT\n  Connection: close\n  \n  (Request type: HEAD)\n",
+      "target": "demo.testfire.net",
+      "port": "80",
+      "proto": "tcp"
+    },
+    {
+      "tool": "nmap",
+      "type": "http-server-header",
+      "severity": "Info",
+      "confidence": "Low",
+      "message": "Apache-Coyote/1.1",
       "target": "demo.testfire.net",
       "port": "80",
       "proto": "tcp"
@@ -100,18 +97,6 @@
       "severity": "Info",
       "message": "detected",
       "target": "https://demo.testfire.net"
-    },
-    {
-      "tool": "nuclei",
-      "type": "NoFindings",
-      "severity": "Info",
-      "message": "No nuclei results"
-    },
-    {
-      "tool": "wfuzz",
-      "type": "NoFindings",
-      "severity": "Info",
-      "message": "No wfuzz results"
     }
   ]
 }

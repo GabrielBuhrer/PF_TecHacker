@@ -1,209 +1,263 @@
-# PfTecHacker — Ferramenta de Varredura de Segurança Web (OWASP Top 10 — Básico)
-
-> **Resumo:** CLI para varredura automática de aplicações web com detecções básicas (OWASP Top 10) e integrações com ferramentas de segurança. Gera relatórios **JSON/CSV/Markdown**, integra **ZAP/Nikto** (opcional) e suporta **Nmap/WhatWeb/Nuclei/Wfuzz**.
-
-![arquitetura](docs/architecture_diagram.png)
+# PfTecHacker — Relatório Técnico & Guia de Uso
+> **Projeto:** Ferramenta educacional de varredura de segurança web (OWASP Top 10 — Básico), com detecções heurísticas e integrações opcionais.
 
 ---
 
-## 📚 Sumário
-- [Visão Geral](#-visão-geral)
-- [Arquitetura & Fluxo](#-arquitetura--fluxo)
-- [Instalação](#-instalação)
-- [Uso Rápido](#-uso-rápido)
-- [Opções da CLI](#-opções-da-cli)
-- [Integrações & Ferramentas Extras](#-integrações--ferramentas-extras)
-- [Relatórios (JSON/CSV/MD)](#-relatórios-jsoncsvmd)
-- [Metodologia de Testes](#-metodologia-de-testes)
-- [Vulnerabilidades Detectadas](#-vulnerabilidades-detectadas)
-- [Recomendações de Mitigação](#-recomendações-de-mitigação)
-- [CI/CD (GitHub Actions)](#-cicd-github-actions)
-- [Docker](#-docker)
-- [Vídeo Demonstrativo](#-vídeo-demonstrativo)
-- [Limitações, Escopo & Ética](#-limitações-escopo--ética)
-- [Roadmap](#-roadmap)
-- [Rubrica & Checklist da Banca](#-rubrica--checklist-da-banca)
-- [Créditos & Licença](#-créditos--licença)
+## 1) Descrição do Sistema & Arquitetura
+**O que é:** uma CLI (`src/scanner.py`) que realiza um crawl leve do alvo e aplica scanners heurísticos para detectar vulnerabilidades comuns do OWASP Top 10, gerando relatório em **JSON**. Integrações opcionais (ZAP/Nikto) e ferramentas extras (Nmap/WhatWeb/Nuclei) podem enriquecer as evidências.
+
+**Arquitetura (alto nível):**
+1. **CLI/Runner** — orquestra tudo, argumentos, timeouts e logs/heartbeat.
+2. **Crawler** — coleta links e formulários do mesmo domínio (respeita `--depth` e limite de URLs).
+3. **Scanners internos** — heurísticas rápidas:
+   - SQL Injection (GET)
+   - XSS Refletido
+   - CSRF (POST sem token)
+   - Directory Traversal / LFI
+   - Command Injection
+   - Exposure/Info Disclosure
+4. **Integrações/Opcionais** — ZAP baseline, Nikto.
+5. **Extras** — Nmap/WhatWeb/Nuclei.
+6. **Consolidador** — resumo por tipo e severidade.
+7. **Gerador de Relatórios** — escreve JSON em `reports/` + outputs do ZAP/Nikto.
+
+**Diagramas (draw.io):**
+- `docs/architecture_diagram.png` (Arquitetura, com ligação tracejada “status/métricas” entre CLI e Heartbeat & Logs)
+- `docs/flowchart.pdf` (Fluxo: args → crawl → scans → integrações → consolidação → relatórios)
 
 ---
 
-## 🔎 Visão Geral
-Trata-se de uma ferramenta **educacional** de varredura de segurança para aplicações web. Ela executa um **crawl leve** do alvo e aplica uma série de **scanners heurísticos** para identificar vulnerabilidades comuns. Em seguida, consolida os achados, gera relatórios e (opcionalmente) executa integrações de terceiros para compor evidências adicionais.
+## 2) Instalação (Host)
 
-**Principais recursos**
-- CLI única (`src/scanner.py`) com **crawl** controlado
-- Scanners internos: **CSRF**, **Exposição de Informações**, **SQL Injection (GET)**, **XSS Refletido**, **Directory Traversal/LFI**, **Command Injection**
-- Integrações opcionais: **OWASP ZAP (baseline)**, **Nikto**
-- Ferramentas extras (quando disponíveis): **Nmap**, **WhatWeb**, **Nuclei**, **Wfuzz**
-- Relatórios automáticos: **JSON**, **Markdown**, **CSV**
-- Logs em console e estrutura de pastas organizada
-
-**Requisitos mínimos**
-- Python ≥ 3.9
-- `pip install -r requirements.txt` (BeautifulSoup4, requests, etc.)
-- (Opcional) Docker para ZAP; `nikto`, `nmap`, `whatweb`, `nuclei`, `wfuzz` instalados localmente se quiser usar as integrações/extras
-
-Testado em: Ubuntu 22.04 / Python 3.10
-
----
-
-## 🧱 Arquitetura & Fluxo
-Arquitetura em alto nível (detalhe no diagrama `docs/architecture_diagram.png`):
-1. **CLI/Runner** → recebe argumentos e coordena execução
-2. **Crawler** → coleta links e formulários (mesmo domínio) com limite de profundidade/URLs
-3. **Scanners Internos** → heurísticas rápidas sobre cada URL/HTML
-4. **Integrações/Extras (opcional)** → ZAP/Nikto/Nmap/etc.
-5. **Consolidador** → sumariza por tipo e severidade
-6. **Gerador de Relatórios** → escreve JSON/CSV/MD em `reports/`
-
-Fluxo (detalhe no `docs/flowchart.pdf`): URL de entrada → crawl → testes por categoria → integrações → consolidação → export.
-
----
-
-## ⚙️ Instalação
 ```bash
-# Clonar e entrar no diretório do projeto
+# Clonar e entrar
 git clone <SEU_REPO>.git
 cd <SEU_REPO>
 
-# (Opcional) Ambiente virtual
+# (Opcional) venv
 python3 -m venv .venv
 source .venv/bin/activate
 
-# Dependências
-pip install -r requirements.txt
+# Dependências Python (o projeto guarda o requirements dentro de src/)
+pip install -r src/requirements.txt
 ```
 
-> Para ZAP baseline via Docker: `docker --version` deve funcionar. Para Nikto: instale via gerenciador da sua distro. Ferramentas extras idem.
+**Ferramentas opcionais no host (se quiser usar integrações/extras):**
+- ZAP baseline (scripts `zap-baseline.py`)
+- `nikto`, `nmap`, `whatweb`, `nuclei` (instale via apt/zip conforme desejar)
 
 ---
 
-## 🚀 Uso Rápido
-Exemplo com alvo de laboratório:
+## 3) Uso Rápido (exemplos)
+A seguir estão exemplos prontos de execução da ferramenta **com** e **sem** limites de tempo.  
+Os timeouts são **opcionais**; você pode removê-los totalmente ou usar um valor muito alto no `--timeout` para simular “sem limite” prático.
+
+---
+
+## Exemplo simples
+```bash
+
 ```bash
 python src/scanner.py \
   -u http://testphp.vulnweb.com \
   --depth 2 --timeout 300 \
-  --export json md csv \
-  --extra-tools nmap whatweb wfuzz \
+  --extra-tools nmap whatweb \
   --output-dir reports
 ```
 
-Executar com integrações (se instaladas):
+---
+
+## Executar com tudo (se instalado no host), com **timeouts OPCIONAIS**
+
 ```bash
-python src/scanner.py -u https://example.com --integrations zap nikto --export md json
-```
+export ZAP_BASELINE_PATH=/opt/ZAP/zap-baseline.py
+export ZAP_TIMEOUT=600        # opcional (s) — remova para não limitar o ZAP
+export NIKTO_MAXTIME=300      # opcional (s) — remova para não limitar o Nikto
 
-Saída esperada (console): resumo de achados + pasta `reports/` contendo `report.json`, `report.md` e `report.csv`.
+python src/scanner.py \
+  -u https://demo.testfire.net \
+  --depth 1 --timeout 1800 \
+  --integrations zap nikto \
+  --extra-tools nmap whatweb nuclei \
+  --zap-mins 5 \
+  --nikto-maxtime 300 \
+  --output-dir "reports/full_$(date +%Y%m%d-%H%M%S)"
+```
 
 ---
 
-## 🧩 Opções da CLI
+## Executar sem "timeout" prático (global) e **sem** limitar ZAP/Nikto
+Se quiser rodar "sem limite" efetivo, use um valor **bem grande** para `--timeout` e **não** defina os timeouts do ZAP/Nikto:
+
+```bash
+unset ZAP_TIMEOUT 2>/dev/null || true
+unset NIKTO_MAXTIME 2>/dev/null || true
+
+# Se for usar o ZAP baseline, informe apenas o caminho do script
+export ZAP_BASELINE_PATH=/opt/ZAP/zap-baseline.py
+
+python src/scanner.py \
+  -u https://demo.testfire.net \
+  --depth 1 --timeout 999999 \
+  --integrations zap nikto \
+  --extra-tools nmap whatweb nuclei \
+  --zap-mins 5 \
+  --output-dir "reports/full_$(date +%Y%m%d-%H%M%S)"
 ```
--u, --url            URL alvo (http/https)
+
+---
+
+## 4) Opções da CLI
+```
+-u, --url            URL alvo (http/https) [obrigatório]
 --depth              Profundidade do crawl (default: 2)
---timeout            Timeout total em segundos (default: 120)
---export             Formatos: json | md | csv (padrão: json md)
---integrations       zap | nikto (opcional)
---extra-tools        nmap | whatweb | nuclei | wfuzz (opcional)
---output-dir         Diretório para salvar relatórios (default: reports)
+--timeout            Timeout total do processo, em s (default: 120)
+--export             json (padrão e única opção)
+--integrations       zap | nikto (opcional; depende das ferramentas no host)
+--extra-tools        nmap | whatweb | nuclei (opcional)
+--zap-mins           Minutos de spider para o ZAP baseline (opcional)
+--nikto-maxtime      Tempo máximo para o Nikto, em s (opcional)
+--output-dir         Diretório de saída (default: reports)
 ```
 
-Limites internos:
-- `MAX_URLS_TO_SCAN = 10` (evita abusos)
-- `PER_REQUEST_TIMEOUT = 5s` (por requisição)
+---
+
+## 5) Metodologia de Testes
+- **Crawl BFS** dentro do mesmo domínio, com profundidade e número de URLs limitados.
+- **Scanners heurísticos** aplicados por URL:
+  - **SQLi (GET):** injeta payloads nos parâmetros e busca _patterns_ de erro (ex.: `SQL syntax`, `ORA-...`).
+  - **XSS Refletido:** injeta payloads comuns (`<script>alert(1)` etc.) e verifica reflexão/assinaturas (onerror, svg/onload).
+  - **Traversal/LFI:** força `../../..` em parâmetros suspeitos (`file`, `path`…) e procura `root:x:0:0`.
+  - **Command Injection:** injeta `id;id` em parâmetros como `cmd/exec` e procura `uid=\d+`.
+  - **CSRF:** formulário `POST` sem campos `csrf|token|xsrf|nonce`.
+  - **Exposure/Info:** `X-Powered-By`, `Index of /`, `.env`, _stack trace_, etc., em headers/corpo.
+- **Integrações/Extras** (opcional) para evidências adicionais passivas/assinaturas.
+- **Relatórios** com sumário e achados detalhados (JSON/CSV/MD).
 
 ---
 
-## 🔗 Integrações & Ferramentas Extras
-- **ZAP baseline (Docker)** — varredura passiva rápida (gera `zap_report.html` localmente no container). Útil para ampliar cobertura de detecções passivas.
-- **Nikto** — checagens de configuração e conteúdos sensíveis.
-- **Extras** (se presentes no sistema):
-  - **Nmap** — fingerprint/portas;
-  - **WhatWeb** — tecnologias e versões;
-  - **Nuclei** — templates de vulnerabilidades;
-  - **Wfuzz** — fuzzing simplificado.
+## 6) Resultados Obtidos (execução real — 06/Nov/2025)
+
+**Comando executado (exemplo do run real):**
+```bash
+export ZAP_BASELINE_PATH=/opt/ZAP/zap-baseline.py
+
+python src/scanner.py \
+  -u https://demo.testfire.net \
+  --depth 1 --timeout 99999 \
+  --export json \
+  --integrations zap \
+  --extra-tools nmap whatweb nuclei \
+  --zap-mins 5 \
+  --nikto-maxtime 300 \
+  --output-dir "reports/full_$(date +%Y%m%d-%H%M%S)"
+```
+
+**Achados internos (scanner.py):**
+
+- **CSRF (Medium)** – login.jsp (e também visto em feedback.jsp/subscribe.jsp em execuções anteriores): Form POST sem token.
+  - **Mapeamento OWASP 2021:** A01 – Broken Access Control (CSRF foi incorporado em A01).
+
+**Achados ZAP (zap_report.json do mesmo run):**
+
+- **Content Security Policy (CSP) Header Not Set** – várias páginas.  
+  - **Mapeamento:** A05 – Security Misconfiguration.
+
+- **Missing Anti-clickjacking Header (X-Frame-Options / frame-ancestors)** – várias páginas.  
+  - **Mapeamento:** A05 – Security Misconfiguration.
+
+- **Strict-Transport-Security (HSTS) Header Not Set** – várias páginas.  
+  - **Mapeamento:** A02 – Cryptographic Failures.
+
+- **X-Content-Type-Options Header Missing** – várias páginas.  
+  - **Mapeamento:** A05 – Security Misconfiguration.
+
+- **Mixed Content (incluindo scripts)** – ex.: `index.jsp?content=personal_investments.htm` carrega `http://demo-analytics.testfire.net/urchin.js`.  
+  - **Mapeamento:** A02 – Cryptographic Failures.
+
+- **Cookie without SameSite (JSESSIONID)** – várias respostas.  
+  - **Mapeamento:** A05 – Security Misconfiguration (mitigação de CSRF).
+
+- **Subresource Integrity (SRI) ausente** para recurso externo – `urchin.js`.  
+  - **Mapeamento:** A08 – Software and Data Integrity Failures.
+
+- **Server header expõe versão** (`Apache-Coyote/1.1`).  
+  - **Mapeamento:** A05 – Security Misconfiguration.
+
+- **(Informativos adicionais)** – ex.: `Permissions-Policy` ausente, *Suspicious Comments*, etc.  
+
+
+**Conclusão:** No conjunto (scanner interno + ZAP), evidenciamos ≥ 4 categorias do OWASP Top 10 (2021):
+- A01 Broken Access Control (CSRF),
+
+- A02 Cryptographic Failures (HSTS ausente, mixed content),
+
+- A05 Security Misconfiguration (CSP/XFO/XCTO/Server header),
+
+- A08 Software and Data Integrity Failures (SRI ausente).
 
 ---
 
-## 📄 Relatórios (JSON/CSV/MD)
-Os arquivos são gravados em `reports/`.
+## 7) Sugestões de Mitigação
+- **SQL Injection:** parametrização/ORM, validação server-side, princípio do menor privilégio no DB, WAF.
+- **XSS Refletido:** _output encoding_, CSP, validação server-side, `HttpOnly/Secure` em cookies.
+- **CSRF:** tokens anti-CSRF por requisição, `SameSite=strict`, *double submit* ou frameworks com proteção nativa.
+- **Traversal/LFI:** normalização/saneamento de paths, *allowlist* de arquivos, proibir `..`, desabilitar *directory listing*.
+- **Command Injection:** nunca concatenar entrada do usuário em shell; usar APIs seguras; *allowlist* de comandos.
+- **Exposure/Headers:** remover `X-Powered-By`; adicionar `HSTS`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`.
 
-**Estrutura `report.json`**
+---
+
+## 8) Integrações & Ferramentas Extras
+- **ZAP baseline (host)**  
+  Instale os scripts:
+  ```bash
+  sudo mkdir -p /opt/ZAP
+  sudo curl -L https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap-baseline.py -o /opt/ZAP/zap-baseline.py
+  sudo curl -L https://raw.githubusercontent.com/zaproxy/zaproxy/main/docker/zap_common.py   -o /opt/ZAP/zap_common.py
+  sudo chmod +x /opt/ZAP/zap-baseline.py
+  export ZAP_BASELINE_PATH=/opt/ZAP/zap-baseline.py
+  ```
+  Flags/vars **opcionais**: `--zap-mins`, `ZAP_TIMEOUT`.
+
+- **Nikto (host)**  
+  `sudo apt-get install -y nikto`  
+  Var **opcional**: `NIKTO_MAXTIME` (limita a duração interna do Nikto), `--nikto-maxtime` na CLI.
+
+- **Extras (host, opcionais):**  
+  `nmap`, `whatweb`, `nuclei` (e.g., `sudo apt-get install -y nmap whatweb`; Nuclei via binário zip oficial).
+
+---
+
+## 9) Relatórios
+Gerados em `reports/`:
+- **`report.json`** — relatório principal consolidado com alvo, data/hora, duração, URLs escaneadas, sumário por tipo/severidade, lista de vulnerabilidades (com parâmetro, payload, evidência).
+- **`zap_report.json`** e **`zap_report.html`** — saídas do ZAP Baseline (quando `--integrations zap` é usado).
+- **`nikto_output.txt`** — saída do Nikto (quando `--integrations nikto` é usado).
+
+Exemplo de entrada em `report.json`:
 ```json
 {
-  "target": "https://example.com",
-  "datetime": "2025-10-30 11:59:59",
-  "duration_seconds": 12.34,
-  "urls_scanned": 7,
-  "vulnerability_summary": {
-    "SQL Injection": 1,
-    "XSS Refletido": 2,
-    "severity_High": 3,
-    "total": 4
-  },
-  "vulnerabilities": [
-    {
-      "type": "SQL Injection",
-      "url": "https://example.com/products?id=' OR 1=1--",
-      "severity": "High",
-      "parameter": "id",
-      "payload": "' OR 1=1--",
-      "evidence": "DB error pattern",
-      "tool": "internal",
-      "confidence": "Medium"
-    }
-  ],
-  "integrations": ["ZAP baseline executed"],
-  "extra_tools": ["Nikto executed"]
+  "type": "CSRF",
+  "url": "https://demo.testfire.net/subscribe.jsp",
+  "severity": "Medium",
+  "evidence": "Form POST sem token",
+  "tool": "internal",
+  "confidence": "Medium"
 }
 ```
----
-
-## 🧪 Metodologia de Testes
-**Alvos de demonstração (laboratório):**
-- `http://testphp.vulnweb.com` (Acunetix Test Site)
-- `https://juice-shop.herokuapp.com` (OWASP Juice Shop – instância pública)
-
-**Parâmetros recomendados:** `--depth 2`, `--timeout 300`, `--export json md csv`.
-
-**Critérios de confirmação (heurísticos):**
-- **SQLi (GET):** padrão de erro de banco no corpo (ex.: *SQL syntax*, *ORA-...*).
-- **XSS Refletido:** reflexão literal do payload/assinaturas típicas (`<script>alert(1)`, `onerror=alert(1)`).
-- **Traversal/LFI:** presença de trecho `root:x:0:0` indicando leitura de `/etc/passwd` em ambientes vulneráveis de laboratório.
-- **Command Injection:** ocorrência de `uid=\d+` no corpo (resultado de `id`).
-- **CSRF:** formulário `POST` sem nenhum campo com `csrf|token|xsrf|nonce`.
-- **Exposição de Informações:** *headers* ou corpo contendo `X-Powered-By`, `Stack trace`, `Index of /`, `.env`, etc.
 
 ---
 
-## 🛡️ Vulnerabilidades Detectadas
-| Categoria | Como detectamos | Evidência típica | Severidade padrão |
-|---|---|---|---|
-| **SQL Injection (GET)** | Injeta payloads em parâmetros de query e busca padrões de erro SQL | `You have an error in your SQL`, `ORA-...` | High |
-| **XSS Refletido** | Injeta payloads XSS e verifica reflexão ou *signatures* | `<script>alert(1)`, `onerror=alert(1)` | High/Medium |
-| **Directory Traversal / LFI** | Parâmetros suspeitos (`file`, `path`, etc.) com `../../..` | `root:x:0:0` | High |
-| **Command Injection** | Parâmetros suspeitos (`cmd`, `exec`) com `id;id` | `uid=1000` | Critical |
-| **CSRF (POST sem token)** | Formulários `POST` sem campos tipo `csrf|token|nonce` | "Form POST sem token" | Medium |
-| **Sensitive Data Exposure** | Padrões nos headers/corpo | `X-Powered-By`, `Stack trace`, `.env` | Low |
+## 10) CI/CD (GitHub Actions)
+Workflow em `.github/workflows/security_scan.yml` (requirements em `src/`):
 
----
-
-## 🔧 Recomendações de Mitigação
-- **SQL Injection:** consultas parametrizadas/ORM, *stored procedures* seguras, *least privilege* no DB, WAF.
-- **XSS:** *output encoding*, CSP, validação do lado servidor, *HttpOnly/Secure* em cookies.
-- **CSRF:** tokens anti-CSRF com *double submit* ou *SameSite=strict*, *nonce* por sessão.
-- **Traversal/LFI:** normalização de caminho, *allowlist* de arquivos, desabilitar *directory listing*.
-- **Command Injection:** *whitelist* de comandos/argumentos, usar APIs seguras (sem shell), *no user input → shell*.
-- **Exposure/Headers:** remover `X-Powered-By`, ativar `HSTS`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`.
-
----
-
-## 🏗️ CI/CD (GitHub Actions)
-Arquivo exemplo: `.github/workflows/security_scan.yml`
 ```yaml
 name: security-scan
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -211,44 +265,47 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      - run: pip install -r requirements.txt
-      - run: |
+          python-version: "3.10"
+          cache: "pip"
+          cache-dependency-path: |
+            src/requirements.txt
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/requirements.txt
+
+      - name: Install host tools (optional)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nmap whatweb
+          whatweb --version || true
+          nmap --version || true
+
+      - name: Run security scan
+        run: |
+          mkdir -p reports
           python src/scanner.py \
             -u http://testphp.vulnweb.com \
             --depth 1 --timeout 180 \
-            --export json md csv \
-            --output-dir reports
+            --extra-tools nmap whatweb \
+            --output-dir reports/ci_${{ github.run_id }}
+
       - name: Upload reports
         uses: actions/upload-artifact@v4
         with:
-          name: reports
-          path: reports/*
+          name: security-reports
+          path: reports/**
 ```
 
 ---
 
-## 🐳 Docker
-**Dockerfile** (exemplo) instala dependências e define *entrypoint*. Para usar a ferramenta dentro do container:
+## 11) Docker (opcional)
+O repositório inclui um **Dockerfile** para empacotar a CLI.  
+Exemplo de build mínimo:
 ```bash
 docker build -t pftechacker:latest .
-
-docker run --rm -it \
-  -v $(pwd)/reports:/app/reports \
-  pftechacker:latest \
-  python src/scanner.py -u http://testphp.vulnweb.com --export md json csv
+docker run --rm -v "$PWD/reports:/app/reports" pftechacker:latest \
+  -u http://testphp.vulnweb.com
 ```
-
-Para rodar **ZAP baseline** a partir da máquina host (integração da ferramenta usa `docker run` internamente):
-```bash
-docker run --rm owasp/zap2docker-stable zap-baseline.py -t http://testphp.vulnweb.com -m 3 -r zap_report.html
-```
-
----
-
-## 🎥 Vídeo Demonstrativo
-
-Cole o link aqui: **[Vídeo (YouTube — Não Listado)](https://exemplo.com/SEU_VIDEO)**
-
----
-
+> Para instalar ferramentas externas na imagem, use `--build-arg`.

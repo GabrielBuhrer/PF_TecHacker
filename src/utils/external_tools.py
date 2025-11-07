@@ -1,15 +1,9 @@
-# src/utils/external_tools.py
-# - Nmap: usa hostname (extrai de URL) e T4 para mais velocidade (modo rápido por padrão)
-# - WhatWeb: prefere JSON e faz fallback p/ texto, enriquecendo mensagem
-# - Wfuzz: threads e wordlist via env (WFUZZ_THREADS, WFUZZ_WORDLIST), tenta JSON e faz fallback p/ texto
-# - Nuclei: lê JSONL e normaliza severidade
 import json, os, subprocess, shlex, tempfile, re, xml.etree.ElementTree as ET
 from typing import List, Dict, Any, Optional
 from urllib.parse import urlparse
 
 Finding = Dict[str, Any]
 
-# ---------------- Utils ----------------
 def _norm_severity(s: str) -> str:
     s = (s or "").lower()
     if s in ("critical","crit","c"): return "Critical"
@@ -24,13 +18,11 @@ def _which(bin_name: str) -> Optional[str]:
     return which(bin_name)
 
 def _run_cmd(cmd: str, timeout: int = 180) -> subprocess.CompletedProcess:
-    # NUNCA usa shell=True; split protege argumentos
     return subprocess.run(shlex.split(cmd), capture_output=True, text=True, timeout=timeout, check=False)
 
 def _host_from_target(target: str) -> str:
     return urlparse(target).hostname or target
 
-# ---------------- Nmap ----------------
 def run_nmap_http(target: str, timeout: int = 180) -> List[Finding]:
     if not _which("nmap"):
         return [{"tool":"nmap","type":"ToolMissing","severity":"Info","message":"nmap not found in PATH"}]
@@ -38,7 +30,6 @@ def run_nmap_http(target: str, timeout: int = 180) -> List[Finding]:
     with tempfile.NamedTemporaryFile(prefix="nmap_", suffix=".xml", delete=False) as tf:
         xml_path = tf.name
 
-    # Modo rápido por padrão (NMAP_FAST=1) ou quando timeout é curto
     fast = (os.environ.get("NMAP_FAST", "1") == "1") or (timeout <= 120)
     if fast:
         scripts = "http-title,http-server-header,http-headers"
@@ -53,7 +44,6 @@ def run_nmap_http(target: str, timeout: int = 180) -> List[Finding]:
         findings: List[Finding] = []
         try:
             tree = ET.parse(xml_path); root = tree.getroot()
-            # Scripts em nível de host
             for s in root.findall(".//hostscript/script"):
                 sid = s.attrib.get("id","http-script")
                 out = s.attrib.get("output","")
@@ -62,7 +52,6 @@ def run_nmap_http(target: str, timeout: int = 180) -> List[Finding]:
                         "tool":"nmap","type":sid,"severity":"Info","confidence":"Low",
                         "message":out[:5000],"target":host
                     })
-            # Scripts em nível de porta
             for port in root.findall(".//port"):
                 for s in port.findall(".//script"):
                     sid = s.attrib.get("id","http-script")
@@ -82,10 +71,8 @@ def run_nmap_http(target: str, timeout: int = 180) -> List[Finding]:
     except Exception as e:
         return [{"tool":"nmap","type":"Error","severity":"Info","message":str(e)}]
 
-# ---------------- WhatWeb ----------------
 def _parse_whatweb_jsonl(txt: str, target: str) -> List[Finding]:
     findings: List[Finding] = []
-    # Alguns whatweb imprimem JSON por linha, outros um objeto único
     if "\n" in txt:
         for line in txt.splitlines():
             line=line.strip()
@@ -123,14 +110,11 @@ def _parse_whatweb_jsonl(txt: str, target: str) -> List[Finding]:
     return findings
 
 def _parse_whatweb_text(txt: str, target: str) -> List[Finding]:
-    # Fallback bem simples: "Plugin[detail], Plugin[detail] ..."
     findings: List[Finding] = []
-    # Pega depois do primeiro espaço (geralmente é a URL seguida de plugins)
     parts = txt.strip().split(None, 1)
     if len(parts) < 2:
         return []
     plugins = parts[1]
-    # Divide por vírgula mas mantém colchetes
     for chunk in plugins.split(","):
         chunk = chunk.strip()
         if not chunk: continue
@@ -146,12 +130,10 @@ def run_whatweb(target: str, timeout: int = 120) -> List[Finding]:
     if not _which("whatweb"):
         return [{"tool":"whatweb","type":"ToolMissing","severity":"Info","message":"whatweb not found in PATH"}]
     try:
-        # Preferimos JSON; alguns builds não suportam --log-json=- corretamente
         cp = _run_cmd(f"whatweb --log-json=- {shlex.quote(target)}", timeout=timeout)
         txt = (cp.stdout or "").strip()
         findings = _parse_whatweb_jsonl(txt, target)
         if not findings:
-            # Fallback: saída padrão verbosa
             cp = _run_cmd(f"whatweb -v {shlex.quote(target)}", timeout=timeout)
             findings = _parse_whatweb_text((cp.stdout or "").strip(), target)
         return findings or [{"tool":"whatweb","type":"NoFindings","severity":"Info","message":"No plugins/evidence"}]
@@ -160,12 +142,12 @@ def run_whatweb(target: str, timeout: int = 120) -> List[Finding]:
     except Exception as e:
         return [{"tool":"whatweb","type":"Error","severity":"Info","message":str(e)}]
 
-# ---------------- Nuclei ----------------
 def run_nuclei(target: str, timeout: int = 180) -> List[Finding]:
     if not _which("nuclei"):
         return [{"tool":"nuclei","type":"ToolMissing","severity":"Info","message":"nuclei not found in PATH"}]
     try:
-        cp = _run_cmd(f"nuclei -u {shlex.quote(target)} -json", timeout=timeout)
+        cmd = f"nuclei -u {shlex.quote(target)} -jsonl -silent -severity critical,high,medium -tags misconfig -rate-limit 200 -c 50"
+        cp = _run_cmd(cmd, timeout=timeout)
         findings: List[Finding] = []
         for line in (cp.stdout or "").splitlines():
             line=line.strip()
@@ -188,71 +170,6 @@ def run_nuclei(target: str, timeout: int = 180) -> List[Finding]:
     except Exception as e:
         return [{"tool":"nuclei","type":"Error","severity":"Info","message":str(e)}]
 
-# ---------------- Wfuzz ----------------
-_WFUZZ_TXT_RE = re.compile(r"Code:\s*(\d+).*?\bhttps?://\S+", re.I)
-
-def _parse_wfuzz_json(txt: str, target: str) -> List[Finding]:
-    """
-    Wfuzz --json geralmente retorna um único objeto com 'results'.
-    Cada item pode trazer 'input' e 'response'.
-    """
-    findings: List[Finding] = []
-    if not txt.strip():
-        return findings
-    try:
-        obj = json.loads(txt)
-    except Exception:
-        return findings
-    results = obj.get("results") or []
-    for r in results:
-        resp = r.get("response", {})
-        code = resp.get("code")
-        url = resp.get("url") or target
-        words = resp.get("words"); lines = resp.get("lines")
-        sev = "Low" if code and int(code) in (200, 301, 302) else "Info"
-        findings.append({
-            "tool":"wfuzz","type":"DirectoryDiscovery","severity":sev,
-            "message":f"HTTP {code} w:{words} l:{lines}","target":url
-        })
-    return findings
-
-def _parse_wfuzz_text(txt: str, target: str) -> List[Finding]:
-    findings: List[Finding] = []
-    for line in (txt or "").splitlines():
-        m = _WFUZZ_TXT_RE.search(line)
-        if not m: 
-            continue
-        code = int(m.group(1))
-        sev = "Low" if code in (200, 301, 302) else "Info"
-        url_match = re.search(r"(https?://\S+)$", line.strip())
-        url = url_match.group(1) if url_match else target
-        findings.append({
-            "tool":"wfuzz","type":"DirectoryDiscovery","severity":sev,
-            "message":f"HTTP {code} (text parse)","target":url
-        })
-    return findings
-
-def run_wfuzz_dirs(target: str, wordlist: str = None, timeout: int = 180) -> List[Finding]:
-    if not _which("wfuzz"):
-        return [{"tool":"wfuzz","type":"ToolMissing","severity":"Info","message":"wfuzz not found in PATH"}]
-    wl = wordlist or os.environ.get("WFUZZ_WORDLIST", "/usr/share/wordlists/dirb/common.txt")
-    threads = os.environ.get("WFUZZ_THREADS", "40")
-    url = (target.rstrip("/")) + "/FUZZ"
-    cmd_json = f"wfuzz -t {threads} -u {shlex.quote(url)} -w {shlex.quote(wl)} --hc 404,400 --json"
-    try:
-        cp = _run_cmd(cmd_json, timeout=timeout)
-        findings = _parse_wfuzz_json(cp.stdout or "", target)
-        if not findings:
-            cmd_txt = f"wfuzz -t {threads} -u {shlex.quote(url)} -w {shlex.quote(wl)} --hc 404,400"
-            cp2 = _run_cmd(cmd_txt, timeout=timeout)
-            findings = _parse_wfuzz_text(cp2.stdout or "", target)
-        return findings or [{"tool":"wfuzz","type":"NoFindings","severity":"Info","message":"No wfuzz results"}]
-    except subprocess.TimeoutExpired:
-        return [{"tool":"wfuzz","type":"Timeout","severity":"Info","message":f"wfuzz timed out ({timeout}s)"}]
-    except Exception as e:
-        return [{"tool":"wfuzz","type":"Error","severity":"Info","message":str(e)}]
-
-# ---------------- Orquestrador ----------------
 def run_tools(selected: list, target: str, timeout: int = 180) -> List[Finding]:
     out: List[Finding] = []
     for t in selected or []:
@@ -260,7 +177,6 @@ def run_tools(selected: list, target: str, timeout: int = 180) -> List[Finding]:
         if t == "nmap": out += run_nmap_http(target, timeout=timeout)
         elif t == "whatweb": out += run_whatweb(target, timeout=timeout)
         elif t == "nuclei": out += run_nuclei(target, timeout=timeout)
-        elif t == "wfuzz": out += run_wfuzz_dirs(target, timeout=timeout)
         else:
             out.append({"tool":t,"type":"UnknownTool","severity":"Info","message":f"Tool not supported: {t}"})
     return out

@@ -21,37 +21,28 @@ import threading
 import requests
 from bs4 import BeautifulSoup
 
-# =========================
-# Configurações padrão
-# =========================
-MAX_URLS_TO_SCAN = 10
+MAX_URLS_TO_SCAN = 1
 DEFAULT_DEPTH = 2
 DEFAULT_TOTAL_TIMEOUT = 120
-PER_REQUEST_TIMEOUT = 5  # segundos por requisição HTTP (mude se quiser)
+PER_REQUEST_TIMEOUT = 5
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "Chrome/124 Safari/537.36"
 )
 
-# Deadline global (preenchido no main)
 _DEADLINE: Optional[float] = None
 
 def _remaining_time() -> int:
-    """Segundos restantes para o scan como um todo (mínimo 0)."""
     if _DEADLINE is None:
-        return 999999  # sem limite (fallback)
+        return 999999
     return max(0, int(_DEADLINE - time.time()))
 
 def _cap_timeout(per_req: int) -> int:
-    """Timeout efetivo por request = min(PER_REQUEST_TIMEOUT, tempo restante), mínimo 1s se ainda houver tempo."""
     rem = _remaining_time()
     if rem <= 0:
         return 0
     return max(1, min(per_req, rem))
 
-# =========================
-# Feedback visual (heartbeat)
-# =========================
 try:
     from rich.live import Live
     from rich.table import Table
@@ -61,10 +52,6 @@ except Exception:
     _HAS_RICH = False
 
 class Heartbeat(threading.Thread):
-    """
-    Thread que imprime o status do scan a cada N segundos.
-    Usa rich.Live se disponível, senão texto simples.
-    """
     def __init__(self, getter, interval: float = 2.0, use_rich: bool = False):
         super().__init__(daemon=True)
         self.getter = getter
@@ -97,13 +84,9 @@ class Heartbeat(threading.Thread):
         table.add_row("Phase", s["phase"])
         return Panel(table, title="Scanner status", expand=False)
 
-# =========================
-# Imports do projeto
-# =========================
 try:
     from report_generator import save_json, save_md, save_csv
 except Exception:
-    # Fallback simples caso report_generator não esteja acessível
     def save_json(data, path):
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
@@ -140,31 +123,23 @@ except Exception:
             for r in rows:
                 w.writerow({k: r.get(k, "") for k in keys})
 
-# Import opcional do arquivo único com ferramentas extras
 try:
     from utils.external_tools import run_tools as _run_tools
     def run_extra_tools(selected, target, timeout=180):
         return _run_tools(selected, target, timeout=timeout)
 except Exception:
     def run_extra_tools(selected, target, timeout=180):
-        # Se não existir, apenas retorne vazio
         return []
 
-# =========================
-# Logging
-# =========================
 logger = logging.getLogger("scanner")
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
 logger.addHandler(handler)
 
-# =========================
-# Utilidades HTTP / Parsing
-# =========================
 session = requests.Session()
 session.headers.update({"User-Agent": USER_AGENT})
-session.verify = True  # pode desativar em laboratório, se necessário
+session.verify = True
 
 ERROR_PATTERNS = re.compile(
     r"(SQL syntax|mysql|postgresql|sqlite|odbc|jdbc|ORA-\d+|unterminated|You have an error in your SQL)",
@@ -173,7 +148,6 @@ ERROR_PATTERNS = re.compile(
 
 SQLI_PAYLOADS = ["'", "' OR '1'='1", "' OR 1=1--", "' UNION SELECT NULL--", "admin' --"]
 
-# --- Payloads/heurísticas para XSS refletido ---
 XSS_PAYLOADS = [
     "<script>alert(1)</script>",
     "'\"><svg/onload=alert(1)>",
@@ -214,7 +188,6 @@ def extract_links_forms(base_url: str, html: str) -> Tuple[Set[str], List[Dict]]
     except Exception:
         return links, forms
 
-    # links
     for a in soup.find_all("a", href=True):
         href = a.get("href")
         if href and isinstance(href, str):
@@ -222,7 +195,6 @@ def extract_links_forms(base_url: str, html: str) -> Tuple[Set[str], List[Dict]]
             if full.startswith(("http://", "https://")):
                 links.add(full)
 
-    # forms
     for f in soup.find_all("form"):
         method = (f.get("method") or "get").lower()
         action = f.get("action") or base_url
@@ -236,9 +208,6 @@ def extract_links_forms(base_url: str, html: str) -> Tuple[Set[str], List[Dict]]
 
     return links, forms
 
-# =========================
-# Heurísticas de scanners
-# =========================
 def add_vuln(vulns: List[Dict], vtype: str, url: str, severity: str = "Medium",
              parameter: str = "", payload: str = "", evidence: str = "", tool: str = "internal"):
     vulns.append({
@@ -315,7 +284,7 @@ def scan_sqli_get(url: str, vulns: List[Dict], timeout: int):
                 add_vuln(vulns, "SQL Injection", new_url, severity="High",
                          parameter=param, payload=payload,
                          evidence="DB error pattern", tool="internal")
-                break  # próximo parâmetro
+                break
 
 def scan_xss_reflected(url: str, vulns: List[Dict], timeout: int):
     if _remaining_time() <= 0:
@@ -386,9 +355,6 @@ def scan_cmdi(url: str, vulns: List[Dict], timeout: int):
                      parameter=p, payload=payload, evidence="uid=", tool="internal")
             break
 
-# =========================
-# Integrações auxiliares (no host, sem Docker)
-# =========================
 def _zap_baseline_path() -> Optional[str]:
     p = os.getenv("ZAP_BASELINE_PATH")
     if p and os.path.exists(p):
@@ -407,12 +373,6 @@ def run_zap_baseline(
     minutes: Optional[int] = None,
     flags: Optional[str] = None,
 ) -> List[str]:
-    """
-    Executa o zap-baseline.py com limite de tempo:
-      - minutos do spider: --zap-mins (CLI) ou ZAP_BASELINE_MINUTES (ENV), default 3
-      - timeout do processo: 'timeout' do scanner OU ZAP_TIMEOUT (ENV)
-      - flags extras: ZAP_BASELINE_FLAGS (ENV) ou 'flags'
-    """
     zap_path = _zap_baseline_path()
     if not zap_path:
         return ["ZAP baseline não encontrado (defina ZAP_BASELINE_PATH ou instale o ZAP). Pulando..."]
@@ -422,14 +382,12 @@ def run_zap_baseline(
     html = outdir / "zap_report.html"
     jout = outdir / "zap_report.json"
 
-    # minutos do spider
     mins_env = os.getenv("ZAP_BASELINE_MINUTES")
     try:
         mins_val = int(minutes if minutes is not None else (mins_env if mins_env else 3))
     except Exception:
         mins_val = 3
 
-    # flags extras
     flags_env = os.getenv("ZAP_BASELINE_FLAGS", "")
     extra_args = []
     if flags:
@@ -437,7 +395,6 @@ def run_zap_baseline(
     if flags_env:
         extra_args += flags_env.split()
 
-    # timeout de processo (parede)
     try:
         zap_timeout = int(os.getenv("ZAP_TIMEOUT", str(timeout)))
     except Exception:
@@ -475,23 +432,15 @@ def run_nikto(
     maxtime: Optional[int] = None,
     flags: Optional[str] = None,
 ) -> List[str]:
-    """
-    Executa Nikto com:
-      - tempo interno (-maxtime) controlado por --nikto-maxtime (CLI) ou NIKTO_MAXTIME (ENV)
-      - timeout de processo (parede) = 'timeout' do scanner OU NIKTO_TIMEOUT (ENV)
-      - flags extras via NIKTO_FLAGS (ENV) ou 'flags'
-    """
     if not which("nikto"):
         return ["Nikto não encontrado no PATH. Pulando..."]
 
-    # tempo interno nikto (-maxtime) em segundos
     mt_env = os.getenv("NIKTO_MAXTIME")
     try:
         mt_val = int(maxtime if maxtime is not None else (mt_env if mt_env else timeout))
     except Exception:
         mt_val = timeout
 
-    # timeout de processo (parede)
     try:
         proc_timeout = int(os.getenv("NIKTO_TIMEOUT", str(timeout)))
     except Exception:
@@ -521,9 +470,6 @@ def run_nikto(
     except Exception as e:
         return [f"Nikto error: {e}"]
 
-# =========================
-# Consolidação de resultados
-# =========================
 def summarize(vulns: List[Dict]) -> Dict[str, int]:
     cnt = defaultdict(int)
     for v in vulns:
@@ -536,9 +482,6 @@ def summarize(vulns: List[Dict]) -> Dict[str, int]:
     out["total"] = len(vulns)
     return out
 
-# =========================
-# CLI / Parser
-# =========================
 def build_parser():
     p = argparse.ArgumentParser(
         prog="scanner.py",
@@ -548,15 +491,15 @@ def build_parser():
     p.add_argument("--depth", type=int, default=DEFAULT_DEPTH, help="Profundidade do crawl (default: 2)")
     p.add_argument("--timeout", type=int, default=DEFAULT_TOTAL_TIMEOUT, help="Timeout total (s) (default: 120)")
     p.add_argument(
-        "--export", nargs="+", choices=["json", "md", "csv"], default=["json", "md"],
-        help="Formatos de relatório"
+        "--export", nargs="+", choices=["json"], default=["json"],
+        help="Formatos de relatório (apenas JSON)"
     )
     p.add_argument(
         "--integrations", nargs="+", choices=["zap", "nikto"],
         help="Ferramentas auxiliares (zap, nikto)"
     )
     p.add_argument(
-        "--extra-tools", nargs="+", choices=["nmap", "whatweb", "nuclei", "wfuzz"],
+        "--extra-tools", nargs="+", choices=["nmap", "whatweb", "nuclei"],
         help="Ferramentas extras (se utils.external_tools estiver presente)"
     )
     p.add_argument("--zap-mins", type=int,
@@ -566,9 +509,6 @@ def build_parser():
     p.add_argument("--output-dir", default="reports", help="Diretório de saída de relatórios")
     return p
 
-# =========================
-# Execução principal
-# =========================
 def main():
     global _DEADLINE
 
@@ -583,7 +523,6 @@ def main():
     start = time.time()
     _DEADLINE = start + total_timeout
 
-    # estado compartilhado do heartbeat
     _stats = {
         "phase": "init",
         "scanned": 0,
@@ -606,17 +545,13 @@ def main():
     try:
         print(f"[*] Iniciando varredura em {target_url}")
         logger.info("Iniciando varredura em %s", target_url)
-        print(f"[*] Limitado a {MAX_URLS_TO_SCAN} URLs, profundidade {depth}")
-        print(f"[*] Timeout por requisição: {PER_REQUEST_TIMEOUT}s, Timeout total: {total_timeout}s")
 
-        # 0) checagem inicial do alvo
         _stats["phase"] = "connect"
         first = fetch(target_url, PER_REQUEST_TIMEOUT)
         if not first:
             print("[!] Alvo inacessível no momento.")
             return
 
-        # 1) BFS crawl simples
         q = deque([(target_url, 0)])
         scanned_urls: Set[str] = set()
         vulnerabilities: List[Dict] = []
@@ -640,10 +575,8 @@ def main():
             if not resp:
                 continue
 
-            # 2) Parse links + forms
             links, forms = extract_links_forms(url, resp.text)
 
-            # 3) Scanners internos
             if _remaining_time() <= 0: break
             _stats["phase"] = "scan:csrf"
             scan_csrf(forms, url, vulnerabilities)
@@ -668,7 +601,6 @@ def main():
             _stats["phase"] = "scan:cmdi"
             scan_cmdi(url, vulnerabilities, PER_REQUEST_TIMEOUT)
 
-            # 4) Expand crawl
             for lk in links:
                 if _remaining_time() <= 0:
                     break
@@ -680,7 +612,6 @@ def main():
         def remaining():
             return max(10, _remaining_time())
 
-        # 5) Integrações auxiliares
         integration_notes: List[str] = []
         if args.integrations and _remaining_time() > 0:
             if "zap" in args.integrations and _remaining_time() > 10:
@@ -704,7 +635,6 @@ def main():
                     )
                 )
 
-        # 6) Ferramentas extras
         extra_notes: List[str] = []
         if args.extra_tools and _remaining_time() > 0:
             for tool in args.extra_tools:
@@ -715,7 +645,6 @@ def main():
                     run_extra_tools([tool], target_url, timeout=remaining())
                 )
 
-        # 7) Montar relatório
         _stats["phase"] = "saving"
         summary = summarize(vulnerabilities)
         report = {
@@ -729,18 +658,11 @@ def main():
             "extra_tools": extra_notes,
         }
 
-        # paths
         json_path = outdir / "report.json"
         md_path = outdir / "report.md"
         csv_path = outdir / "report.csv"
 
-        # 8) Salvar
-        if "json" in args.export:
-            save_json(report, json_path)
-        if "md" in args.export:
-            save_md(report, md_path)
-        if "csv" in args.export:
-            save_csv(report, csv_path)
+        save_json(report, json_path)
 
         _stats["phase"] = "done"
 
@@ -748,22 +670,7 @@ def main():
         _hb.stop()
         time.sleep(0.1)
 
-    # 9) Saída no console (já sem heartbeat ativo)
     print("\n[+] Varredura completa!\n")
-    print("Relatório de Vulnerabilidades:\n")
-    for v in report.get("vulnerabilities", []):
-        print(f"Tipo: {v.get('type', '-')}, Severidade: {v.get('severity', '-')}, URL: {v.get('url','-')} ")
-        if v.get("parameter"):
-            print(f"  - Parâmetro: {v.get('parameter')}")
-        if v.get("payload"):
-            print(f"  - Payload: {v.get('payload')}")
-        if v.get("evidence"):
-            print(f"  - Evidência: {v.get('evidence')}")
-        print()
-
-    print("Resumo:")
-    for k, v in report.get("vulnerability_summary", {}).items():
-        print(f"  - {k}: {v}")
 
     print("\nArquivos gerados em:", outdir.resolve())
 
