@@ -56,12 +56,10 @@ Os timeouts são **opcionais**; você pode removê-los totalmente ou usar um val
 
 ## Exemplo simples
 ```bash
-
-```bash
 python src/scanner.py \
   -u http://testphp.vulnweb.com \
   --depth 2 --timeout 300 \
-  --extra-tools nmap whatweb \
+  --export json \
   --output-dir reports
 ```
 
@@ -132,7 +130,7 @@ python src/scanner.py \
   - **CSRF:** formulário `POST` sem campos `csrf|token|xsrf|nonce`.
   - **Exposure/Info:** `X-Powered-By`, `Index of /`, `.env`, _stack trace_, etc., em headers/corpo.
 - **Integrações/Extras** (opcional) para evidências adicionais passivas/assinaturas.
-- **Relatórios** com sumário e achados detalhados (JSON/CSV/MD).
+- **Relatórios** com sumário e achados detalhados (JSON).
 
 ---
 
@@ -309,3 +307,7 @@ docker run --rm -v "$PWD/reports:/app/reports" pftechacker:latest \
   -u http://testphp.vulnweb.com
 ```
 > Para instalar ferramentas externas na imagem, use `--build-arg`.
+
+## 12) Vídeo de demonstração
+
+https://youtu.be/EG_foAJ2JaA

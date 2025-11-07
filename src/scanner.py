@@ -21,7 +21,7 @@ import threading
 import requests
 from bs4 import BeautifulSoup
 
-MAX_URLS_TO_SCAN = 1
+MAX_URLS_TO_SCAN = 50
 DEFAULT_DEPTH = 2
 DEFAULT_TOTAL_TIMEOUT = 120
 PER_REQUEST_TIMEOUT = 5
@@ -554,6 +554,7 @@ def main():
 
         q = deque([(target_url, 0)])
         scanned_urls: Set[str] = set()
+        queued_urls: Set[str] = {target_url}
         vulnerabilities: List[Dict] = []
         urls_seen: List[str] = []
         _stats["queue"] = len(q)
@@ -604,9 +605,10 @@ def main():
             for lk in links:
                 if _remaining_time() <= 0:
                     break
-                if lk.startswith(("http://", "https://")) and lk not in scanned_urls:
+                if lk.startswith(("http://", "https://")) and lk not in scanned_urls and lk not in queued_urls:
                     if urlparse(lk).netloc == urlparse(target_url).netloc:
                         q.append((lk, d + 1))
+                        queued_urls.add(lk)
             _stats["queue"] = len(q)
 
         def remaining():

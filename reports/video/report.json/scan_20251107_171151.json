@@ -1,15 +1,48 @@
 {
   "target": "https://demo.testfire.net",
-  "datetime": "2025-11-07 16:35:24",
-  "duration_seconds": 164.88,
-  "urls_scanned": 1,
+  "datetime": "2025-11-07 17:11:51",
+  "duration_seconds": 225.56,
+  "urls_scanned": 33,
   "vulnerability_summary": {
-    "total": 0
+    "CSRF": 3,
+    "severity_Medium": 3,
+    "total": 3
   },
-  "vulnerabilities": [],
+  "vulnerabilities": [
+    {
+      "type": "CSRF",
+      "url": "https://demo.testfire.net/subscribe.jsp",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "https://demo.testfire.net/feedback.jsp",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    },
+    {
+      "type": "CSRF",
+      "url": "https://demo.testfire.net/login.jsp",
+      "severity": "Medium",
+      "parameter": "",
+      "payload": "",
+      "evidence": "Form POST sem token",
+      "tool": "internal",
+      "confidence": "Medium"
+    }
+  ],
   "integrations": [
-    "ZAP baseline executado (rc=0) [m=2min, timeout=398s]. Relatórios: zap_report.html, zap_report.json",
-    "Nikto executado (rc=0) [maxtime=120s, timeout=372s] – saída gravada em nikto_output.txt"
+    "ZAP baseline executado (rc=0) [m=2min, timeout=336s]. Relatórios: zap_report.html, zap_report.json",
+    "Nikto executado (rc=0) [maxtime=120s, timeout=310s] – saída gravada em nikto_output.txt"
   ],
   "extra_tools": [
     {
@@ -17,7 +50,7 @@
       "type": "http-headers",
       "severity": "Info",
       "confidence": "Low",
-      "message": "\n  Server: Apache-Coyote/1.1\n  Set-Cookie: JSESSIONID=904C8A3F9FDFE442A98505915FA39557; Path=/; HttpOnly\n  Content-Type: text/html;charset=ISO-8859-1\n  Transfer-Encoding: chunked\n  Date: Fri, 07 Nov 2025 19:35:13 GMT\n  Connection: close\n  \n  (Request type: HEAD)\n",
+      "message": "\n  Server: Apache-Coyote/1.1\n  Set-Cookie: JSESSIONID=1B1C38D4C90DF9774B5B05CC97DF7853; Path=/; HttpOnly\n  Content-Type: text/html;charset=ISO-8859-1\n  Transfer-Encoding: chunked\n  Date: Fri, 07 Nov 2025 20:11:41 GMT\n  Connection: close\n  \n  (Request type: HEAD)\n",
       "target": "demo.testfire.net",
       "port": "80",
       "proto": "tcp"

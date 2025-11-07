@@ -7,14 +7,14 @@
 + SSL Info:        Subject: /CN=demo.testfire.net
                    Ciphers: ECDHE-RSA-AES256-GCM-SHA384
                    Issuer:  /C=GB/ST=Greater Manchester/L=Salford/O=Sectigo Limited/CN=Sectigo RSA Domain Validation Secure Server CA
-+ Start Time:         2025-11-07 16:33:08 (GMT-3)
++ Start Time:         2025-11-07 17:09:37 (GMT-3)
 ---------------------------------------------------------------------------
 + Server: Apache-Coyote/1.1
 + Cookie JSESSIONID created without the secure flag
 + Cookie JSESSIONID created without the httponly flag
 + The anti-clickjacking X-Frame-Options header is not present.
 + Scan terminated:  0 error(s) and 3 item(s) reported on remote host
-+ End Time:           2025-11-07 16:35:10 (GMT-3) (122 seconds)
++ End Time:           2025-11-07 17:11:39 (GMT-3) (122 seconds)
 ---------------------------------------------------------------------------
 + 1 host(s) tested
 
